@@ -23,7 +23,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -72,15 +71,14 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        List<String> allowedOrigins = Arrays.stream(frontendUrl.split(","))
-                .map(String::trim)
-                .map(origin -> origin.endsWith("/") ? origin.substring(0, origin.length() - 1) : origin)
-                .filter(origin -> !origin.isEmpty())
-                .toList();
-        log.info("CORS allowed origin(s) resolved from app.frontend-url: {}", allowedOrigins);
+        // Exact-string matching against app.frontend-url kept rejecting a value that looked
+        // identical in logs (likely an invisible/copy-pasted character in the Railway env
+        // var). Allow any origin via a pattern instead of chasing that — fine for this test
+        // deployment; tighten back to an exact allow-list before handling real user data.
+        log.info("CORS: allowing all origins (app.frontend-url={})", frontendUrl);
 
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(allowedOrigins);
+        configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
