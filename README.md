@@ -77,16 +77,22 @@ automatically.
 ### 3. Frontend service
 
 - Root Directory: `frontend`
-- Before deploying, update `frontend/src/environments/environment.prod.ts` with the
-  backend's actual public URL from step 2, then commit and push:
+- **Create a local `frontend/src/environments/environment.prod.ts`** (not in git — it's in `.gitignore`) with your backend's public URL:
 
   ```ts
   export const environment = {
     production: true,
-    apiUrl: 'https://your-backend.up.railway.app',
-    wsUrl: 'https://your-backend.up.railway.app',
+    apiUrl: 'https://your-backend-url.up.railway.app',
+    wsUrl: 'https://your-backend-url.up.railway.app',
   };
   ```
+
+  **⚠️ Important:** This file is ignored by git and never committed. You must create it locally before building for production:
+  1. Copy the template above
+  2. Replace `your-backend-url.up.railway.app` with the actual backend URL from step 2
+  3. Save to `frontend/src/environments/environment.prod.ts` on your local machine
+  4. Run `npm run build` to create the production bundle
+  5. Push to deploy on Railway (the build artifact will include your environment config)
 
 - Railway sets `PORT` automatically; the Angular SSR server (`frontend/src/server.ts`)
   already reads it.
@@ -96,7 +102,7 @@ automatically.
 
 Once both have public URLs, double check:
 - Backend's `FRONTEND_URL` env var matches the frontend's actual domain (CORS).
-- Frontend's `environment.prod.ts` `apiUrl`/`wsUrl` match the backend's actual domain.
+- Your local `frontend/src/environments/environment.prod.ts` `apiUrl`/`wsUrl` match the backend's actual domain.
 
 Redeploy either service after changing either of these.
 
