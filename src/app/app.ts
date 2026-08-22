@@ -1,12 +1,13 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { NavbarComponent } from './shared/components/navbar/navbar.component';
+import { OrderReadyNotifierComponent } from './shared/components/order-ready-notifier/order-ready-notifier.component';
+import { AdminNotifierComponent } from './shared/components/admin-notifier/admin-notifier.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, NavbarComponent, OrderReadyNotifierComponent, AdminNotifierComponent],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
-export class App {
-  protected readonly title = signal('Hotel-Order-Management');
-}
+export class App {}

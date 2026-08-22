@@ -1,0 +1,149 @@
+<div class="min-h-screen bg-surface pb-8">
+  <header class="no-print sticky top-0 z-10 bg-surface-card border-b border-surface-border px-4 py-3 flex items-center gap-2">
+    <button
+      type="button"
+      class="min-h-tap min-w-tap flex items-center justify-center rounded-full text-gray-400 hover:bg-surface-hover"
+      (click)="backToTables()"
+      aria-label="Back to tables"
+    >
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="text-xl md:text-2xl font-bold text-white">
+      Table {{ order()?.tableNumber }} — Bill
+    </h1>
+  </header>
+
+  @if (isLoading()) {
+    <app-loading-spinner label="Loading order…" />
+  } @else {
+    <div class="no-print p-4 flex flex-col gap-4 max-w-lg mx-auto">
+      @if (order(); as o) {
+        @if (o.status !== 'BILLED' && o.status !== 'CLOSED') {
+          <div class="rounded-xl border border-surface-border bg-surface-card p-4">
+            <h2 class="text-base font-semibold text-white mb-3">Items</h2>
+            @if (o.items.length === 0) {
+              <p class="text-sm text-gray-400 mb-2 text-center">No items on this order yet.</p>
+            } @else {
+              <ul class="flex flex-col gap-2 mb-4">
+                @for (item of o.items; track item.id) {
+                  <li class="flex justify-between text-base text-gray-300">
+                    <span>{{ itemName(item) }} × {{ item.quantity }}</span>
+                  </li>
+                }
+              </ul>
+            }
+            @if (o.status !== 'READY_FOR_BILL') {
+              @if (!isReadyToServe()) {
+                <p class="text-sm text-gray-400 mb-2 text-center">Waiting for the kitchen to finish preparing…</p>
+              }
+              <button
+                type="button"
+                class="w-full min-h-tap rounded-lg bg-brand-600 text-white text-base font-semibold disabled:opacity-40"
+                [disabled]="isProcessing() || !isReadyToServe()"
+                (click)="markReadyForBill()"
+              >
+                Ready for Bill
+              </button>
+            }
+          </div>
+        }
+
+        @if (o.status === 'READY_FOR_BILL' && !bill()) {
+          @if (isAdmin()) {
+            <button
+              type="button"
+              class="w-full min-h-tap rounded-lg bg-brand-600 text-white text-base font-semibold disabled:opacity-40"
+              [disabled]="isProcessing()"
+              (click)="generateBill()"
+            >
+              Generate Bill
+            </button>
+          } @else {
+            <p class="text-sm text-gray-400 text-center py-4">Waiting for admin to generate the bill…</p>
+          }
+        }
+      }
+
+      @if (bill(); as b) {
+        <div class="rounded-xl border border-surface-border bg-surface-card p-4">
+          <h2 class="text-base font-semibold text-white mb-3">Itemised Bill</h2>
+          <ul class="flex flex-col gap-2 mb-3">
+            @for (item of b.items; track item.menuItemId) {
+              <li class="flex justify-between text-base text-gray-300">
+                <span>{{ itemName(item) }} × {{ item.quantity }}</span>
+                <span>{{ item.lineTotal | currencyFormat }}</span>
+              </li>
+            }
+          </ul>
+          <div class="border-t border-surface-border pt-3 flex flex-col gap-1 text-base">
+            <div class="flex justify-between text-gray-400">
+              <span>Subtotal</span><span>{{ b.subtotal | currencyFormat }}</span>
+            </div>
+            <div class="flex justify-between text-gray-400">
+              <span>Tax ({{ b.taxPercent }}%)</span><span>{{ b.taxAmount | currencyFormat }}</span>
+            </div>
+            <div class="flex justify-between font-bold text-lg text-white">
+              <span>Grand Total</span><span>{{ b.total | currencyFormat }}</span>
+            </div>
+          </div>
+        </div>
+
+        @if (!b.paid && b.qrCodeBase64) {
+          <div class="rounded-xl border border-surface-border bg-surface-card p-4 text-center">
+            <h2 class="text-base font-semibold text-white mb-3">Scan to Pay via UPI</h2>
+            <img
+              [src]="'data:image/png;base64,' + b.qrCodeBase64"
+              width="180"
+              height="180"
+              class="mx-auto rounded-lg"
+              alt="Payment QR code"
+            />
+          </div>
+        }
+
+        @if (!b.paid) {
+          @if (isAdmin()) {
+            <div class="rounded-xl border border-surface-border bg-surface-card p-4">
+              <h2 class="text-base font-semibold text-white mb-3">Payment Mode</h2>
+              <mat-button-toggle-group
+                class="w-full flex"
+                [value]="paymentMode()"
+                (change)="paymentMode.set($event.value)"
+              >
+                <mat-button-toggle value="CASH" class="flex-1 min-h-tap">Cash</mat-button-toggle>
+                <mat-button-toggle value="CARD" class="flex-1 min-h-tap">Card</mat-button-toggle>
+                <mat-button-toggle value="UPI" class="flex-1 min-h-tap">UPI</mat-button-toggle>
+              </mat-button-toggle-group>
+
+              <button
+                type="button"
+                class="w-full min-h-tap mt-4 rounded-lg bg-brand-600 text-white text-base font-semibold disabled:opacity-40"
+                [disabled]="isProcessing()"
+                (click)="markPaid()"
+              >
+                Mark as Paid
+              </button>
+            </div>
+          } @else {
+            <p class="text-sm text-gray-400 text-center py-2">Waiting for admin to collect payment…</p>
+          }
+        }
+
+        @if (isAdmin()) {
+          <button
+            type="button"
+            class="w-full min-h-tap rounded-lg border border-surface-border text-gray-300 text-base font-semibold flex items-center justify-center gap-2 hover:bg-surface-hover"
+            (click)="printBill()"
+          >
+            <mat-icon>print</mat-icon>
+            Print Bill
+          </button>
+        }
+      }
+    </div>
+
+    @if (bill(); as b) {
+      <app-printable-bill [bill]="b" />
+    }
+  }
+</div>

@@ -1,0 +1,128 @@
+<div class="relative min-h-screen flex items-center justify-center overflow-hidden bg-surface px-4 py-12">
+  <!-- Aurora background -->
+  <div class="pointer-events-none absolute inset-0 overflow-hidden">
+    <div
+      class="absolute -top-40 -left-32 w-[32rem] h-[32rem] rounded-full opacity-30 blur-[120px]"
+      style="background: radial-gradient(circle, #f97316, transparent 70%);"
+    ></div>
+    <div
+      class="absolute -bottom-40 -right-24 w-[28rem] h-[28rem] rounded-full opacity-25 blur-[120px]"
+      style="background: radial-gradient(circle, #ef4444, transparent 70%);"
+    ></div>
+    <div
+      class="absolute top-1/3 right-1/4 w-72 h-72 rounded-full opacity-10 blur-[100px]"
+      style="background: radial-gradient(circle, #fb923c, transparent 70%);"
+    ></div>
+    <div
+      class="absolute inset-0 opacity-[0.03]"
+      style="background-image: radial-gradient(circle at 1.5px 1.5px, white 1px, transparent 0); background-size: 28px 28px;"
+    ></div>
+  </div>
+
+  <div class="relative z-10 w-full max-w-md">
+    <!-- Compact brand mark -->
+    <a routerLink="/" class="flex flex-col items-center gap-2 mb-8">
+      <div
+        class="flex items-center justify-center w-12 h-12 rounded-2xl shadow-lg"
+        style="background: linear-gradient(135deg, #f97316, #ef4444); box-shadow: 0 8px 24px rgba(249,115,22,0.35);"
+      >
+        <span class="text-2xl">🏨</span>
+      </div>
+      <div class="text-center">
+        <p class="text-white font-black tracking-wide text-sm">SWAMI RESTAURANT</p>
+        <p class="text-gray-500 text-[10px] tracking-[0.2em] uppercase">Order Management</p>
+      </div>
+    </a>
+
+    <!-- Glass card -->
+    <div
+      class="rounded-3xl p-8 backdrop-blur-xl"
+      style="background: rgba(26,26,26,0.65); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 60px rgba(0,0,0,0.5);"
+    >
+      <h2 class="text-2xl font-bold text-white mb-1">Welcome back</h2>
+      <p class="text-gray-400 text-sm mb-8">Sign in to your account</p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-5">
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Email address</label>
+          <div class="relative">
+            <mat-icon class="!absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 !text-xl"> mail </mat-icon>
+            <input
+              formControlName="email"
+              type="email"
+              autocomplete="username"
+              inputmode="email"
+              placeholder="you@thehotel.com"
+              class="w-full min-h-tap pl-11 pr-4 py-3 rounded-2xl text-white text-sm transition-all placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/40"
+              style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);"
+            />
+          </div>
+          @if (form.get('email')?.invalid && form.get('email')?.touched) {
+            <p class="text-red-400 text-xs mt-1.5 ml-1">Enter a valid email</p>
+          }
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+          <div class="relative">
+            <mat-icon class="!absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 !text-xl"> lock </mat-icon>
+            <input
+              formControlName="password"
+              [type]="hidePassword() ? 'password' : 'text'"
+              autocomplete="current-password"
+              placeholder="••••••••"
+              class="w-full min-h-tap pl-11 pr-12 py-3 rounded-2xl text-white text-sm transition-all placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/40"
+              style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);"
+            />
+            <button
+              type="button"
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 min-h-tap min-w-tap flex items-center justify-center"
+              (click)="hidePassword.set(!hidePassword())"
+              [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'"
+            >
+              <mat-icon class="!text-xl">{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+          @if (form.get('password')?.invalid && form.get('password')?.touched) {
+            <p class="text-red-400 text-xs mt-1.5 ml-1">Password must be at least 6 characters</p>
+          }
+        </div>
+
+        @if (errorMessage()) {
+          <div
+            class="rounded-2xl p-3 flex items-center gap-2"
+            style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25);"
+          >
+            <mat-icon class="text-red-400 !text-lg">error</mat-icon>
+            <p class="text-red-400 text-sm">{{ errorMessage() }}</p>
+          </div>
+        }
+
+        <button
+          type="submit"
+          [disabled]="form.invalid || isSubmitting()"
+          class="w-full min-h-tap text-white font-bold rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          style="background: linear-gradient(135deg, #f97316, #ef4444); box-shadow: 0 8px 24px rgba(249,115,22,0.3);"
+        >
+          @if (isSubmitting()) {
+            <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          }
+          {{ isSubmitting() ? 'Signing in…' : 'Sign in' }}
+        </button>
+      </form>
+
+      <div class="mt-7 pt-6" style="border-top: 1px solid rgba(255,255,255,0.08);">
+        <p class="text-[11px] text-gray-500 text-center mb-3 tracking-wide uppercase">Access by role</p>
+        <div class="flex gap-2 justify-center">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold" style="background: rgba(168,85,247,0.12); color: #c084fc; border: 1px solid rgba(168,85,247,0.2);">Admin</span>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold" style="background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.2);">Waiter</span>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold" style="background: rgba(249,115,22,0.12); color: #fb923c; border: 1px solid rgba(249,115,22,0.2);">Kitchen</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-center text-xs text-gray-500 mt-6">
+      <a routerLink="/" class="hover:text-gray-300 transition-colors">← Back to home</a>
+    </p>
+  </div>
+</div>

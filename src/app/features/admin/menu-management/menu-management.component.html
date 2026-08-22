@@ -1,0 +1,89 @@
+<div class="p-4 max-w-3xl mx-auto flex flex-col gap-6">
+  <form [formGroup]="form" (ngSubmit)="submit()" class="rounded-xl border border-surface-border bg-surface-card p-4 flex flex-col gap-2">
+    <h2 class="text-base font-semibold text-white mb-1">
+      {{ editingId() ? 'Edit Item' : 'Add Menu Item' }}
+    </h2>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Category</mat-label>
+      <mat-select formControlName="categoryId">
+        @for (category of categories(); track category.id) {
+          <mat-option [value]="category.id">{{ category.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Description</mat-label>
+      <input matInput formControlName="description" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Price</mat-label>
+      <input matInput type="number" formControlName="price" min="0" step="0.01" />
+    </mat-form-field>
+
+    <div class="flex items-center gap-6 py-1">
+      <mat-checkbox formControlName="vegetarian">Vegetarian</mat-checkbox>
+      <mat-checkbox formControlName="available">Available</mat-checkbox>
+    </div>
+
+    <div class="flex gap-2">
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        class="min-h-tap flex-1 text-base"
+        [disabled]="form.invalid || isSubmitting()"
+      >
+        {{ editingId() ? 'Save Changes' : 'Add Item' }}
+      </button>
+      @if (editingId()) {
+        <button mat-button type="button" class="min-h-tap" (click)="cancelEdit()">Cancel</button>
+      }
+    </div>
+  </form>
+
+  @if (isLoading()) {
+    <app-loading-spinner label="Loading menu items…" />
+  } @else if (items().length === 0) {
+    <p class="text-center text-base text-gray-400 py-8">No menu items found</p>
+  } @else {
+    <ul class="flex flex-col gap-2">
+      @for (item of items(); track item.id) {
+        <li class="rounded-xl border border-surface-border bg-surface-card p-3 flex items-center gap-3">
+          <div class="flex-1 min-w-0">
+            <p class="text-base font-medium text-white truncate">{{ item.name }}</p>
+            <p class="text-sm text-gray-400 truncate">
+              {{ categoryName(item.categoryId) }} · {{ item.price | currencyFormat }}
+            </p>
+          </div>
+          <mat-slide-toggle [checked]="item.available" (change)="toggleAvailability(item)" />
+          <button
+            mat-icon-button
+            type="button"
+            class="min-h-tap min-w-tap"
+            (click)="edit(item)"
+            aria-label="Edit item"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            type="button"
+            class="min-h-tap min-w-tap text-red-400"
+            (click)="remove(item)"
+            aria-label="Delete item"
+          >
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</div>

@@ -1,0 +1,36 @@
+<div class="min-h-screen bg-surface pb-24">
+  <header class="sticky top-0 z-10 bg-surface-card border-b border-surface-border px-4 py-3">
+    <h1 class="text-xl md:text-2xl font-bold text-white">Table {{ cart.tableNumber() }}</h1>
+    <p class="text-sm text-gray-400">{{ cart.sessionType() }}</p>
+  </header>
+
+  @if (isLoading()) {
+    <app-loading-spinner label="Loading menu…" />
+  } @else {
+    <app-menu-category [categories]="categories()" [selectedId]="selectedCategoryId()" (select)="selectCategory($event)" />
+
+    @if (filteredItems().length === 0) {
+      <p class="text-center text-base text-gray-400 py-12">No menu items found</p>
+    } @else {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+        @for (item of filteredItems(); track item.id) {
+          <app-menu-item-card [item]="item" [selected]="selectedItemIds().has(item.id)" (toggle)="toggleItem($event)" />
+        }
+      </div>
+    }
+  }
+
+  @if (cart.itemCount() > 0) {
+    <button
+      type="button"
+      class="fixed bottom-4 left-4 right-4 min-h-tap rounded-xl bg-brand-600 text-white shadow-lg flex items-center justify-between px-4 z-20"
+      (click)="openCart()"
+    >
+      <span class="flex items-center gap-2 text-base font-semibold">
+        <mat-icon>shopping_cart</mat-icon>
+        {{ cart.itemCount() }} item{{ cart.itemCount() === 1 ? '' : 's' }}
+      </span>
+      <span class="text-base font-bold">{{ cart.estimatedTotal() | currencyFormat }}</span>
+    </button>
+  }
+</div>

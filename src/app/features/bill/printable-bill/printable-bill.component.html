@@ -1,0 +1,47 @@
+<div id="printable-bill" style="font-family: monospace; width: 300px; margin: 0 auto;">
+  <h2 style="text-align: center; margin: 0 0 4px;">SWAMI PURE VEG</h2>
+  <p style="text-align: center; margin: 0 0 12px; font-size: 12px;">Order Receipt</p>
+
+  <p style="margin: 2px 0;">Table: {{ bill.tableNumber }}</p>
+  <p style="margin: 2px 0;">Session: {{ bill.sessionType }}</p>
+  <p style="margin: 2px 0;">Waiter: {{ bill.waiterName }}</p>
+  <p style="margin: 2px 0;">Date: {{ bill.generatedAt | date: 'medium' }}</p>
+
+  <hr style="border: none; border-top: 1px dashed #000; margin: 8px 0;" />
+
+  @for (item of bill.items; track item.menuItemId) {
+    <div style="display: flex; justify-content: space-between; margin: 2px 0;">
+      <span>{{ itemName(item) }} × {{ item.quantity }}</span>
+      <span>{{ item.lineTotal | currencyFormat }}</span>
+    </div>
+  }
+
+  <hr style="border: none; border-top: 1px dashed #000; margin: 8px 0;" />
+
+  <div style="display: flex; justify-content: space-between; margin: 2px 0;">
+    <span>Subtotal</span>
+    <span>{{ bill.subtotal | currencyFormat }}</span>
+  </div>
+  <div style="display: flex; justify-content: space-between; margin: 2px 0;">
+    <span>Tax ({{ bill.taxPercent }}%)</span>
+    <span>{{ bill.taxAmount | currencyFormat }}</span>
+  </div>
+
+  <hr style="border: none; border-top: 1px solid #000; margin: 8px 0;" />
+
+  <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px;">
+    <span>TOTAL</span>
+    <span>{{ bill.total | currencyFormat }}</span>
+  </div>
+
+  @if (bill.paid) {
+    <p style="text-align: center; margin-top: 12px;">Paid via {{ bill.paymentMode }}</p>
+  } @else if (bill.qrCodeBase64) {
+    <div style="text-align: center; margin-top: 16px;">
+      <p style="font-size: 12px; margin: 0 0 6px;">Scan to Pay via UPI</p>
+      <img [src]="'data:image/png;base64,' + bill.qrCodeBase64" width="150" height="150" alt="Payment QR code" />
+    </div>
+  }
+
+  <p style="text-align: center; margin-top: 16px; font-size: 12px;">Thank you, visit again!</p>
+</div>

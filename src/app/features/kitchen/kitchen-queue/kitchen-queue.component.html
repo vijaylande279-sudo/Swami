@@ -1,0 +1,184 @@
+<div class="min-h-screen" style="background: #0f0f0f;">
+  <!-- Kitchen's own dark navbar — does NOT use the shared app-navbar -->
+  <nav
+    style="background: #1a1a1a; border-bottom: 1px solid #2a2a2a;"
+    class="sticky top-0 z-50 px-6 py-4 flex items-center justify-between"
+  >
+    <div class="flex items-center gap-3">
+      <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+      <span class="text-gray-400 text-sm">Live Orders</span>
+      <span class="bg-brand-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ orders().length }}</span>
+    </div>
+
+    <h1
+      class="text-xl font-black"
+      style="background: linear-gradient(135deg, #f97316, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"
+    >
+      🏨 SWAMI PURE VEG
+    </h1>
+
+    <div class="flex items-center gap-3">
+      <span
+        class="px-3 py-1 rounded-full text-xs font-bold"
+        style="background: rgba(249,115,22,0.2); color: #fb923c; border: 1px solid rgba(249,115,22,0.3);"
+      >
+        KITCHEN
+      </span>
+      <button type="button" class="text-gray-500 hover:text-red-400 transition-colors p-1" (click)="logout()" aria-label="Logout">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+  </nav>
+
+  <!-- New order alert -->
+  @if (newOrderAlert(); as alert) {
+    <div
+      class="mx-6 mt-4 p-4 rounded-2xl flex items-center gap-4 animate-pulse"
+      style="background: rgba(249,115,22,0.15); border: 1px solid rgba(249,115,22,0.5);"
+    >
+      <span class="text-3xl">🔔</span>
+      <div>
+        <p class="text-orange-400 font-bold text-lg">New Order — {{ alert.tableNumber }}!</p>
+        <p class="text-orange-300/70 text-sm">{{ alert.items.length }} item(s) waiting</p>
+      </div>
+      <button type="button" class="ml-auto text-gray-500 hover:text-white" (click)="dismissAlert()" aria-label="Dismiss">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
+
+  <!-- Section header -->
+  <div class="px-6 pt-6 pb-4">
+    <h2 class="text-white text-lg font-bold">Active Orders</h2>
+    <p class="text-gray-500 text-sm">
+      {{ orders().length === 0 ? 'All caught up!' : orders().length + ' orders in queue' }}
+    </p>
+  </div>
+
+  @if (isLoading()) {
+    <app-loading-spinner label="Loading orders…" />
+  } @else if (orders().length === 0) {
+    <div class="flex flex-col items-center justify-center py-32 px-4">
+      <div class="text-8xl mb-6 opacity-30">🍳</div>
+      <h3 class="text-gray-500 text-xl font-bold mb-2">No active orders</h3>
+      <p class="text-gray-600 text-sm text-center">Orders from waiters will appear here automatically</p>
+    </div>
+  } @else {
+    <div class="px-6 pb-8 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+      @for (order of orders(); track order.id) {
+        <div class="rounded-2xl overflow-hidden transition-all duration-300" [style.border]="
+            order.status === 'SENT_TO_KITCHEN' ? '2px solid #f97316' :
+            order.status === 'PREPARING' ? '2px solid #3b82f6' :
+            isReady(order) ? '2px solid #22c55e' : '2px solid #2a2a2a'
+          " style="background: #1a1a1a;">
+          <!-- Card header -->
+          <div
+            class="px-5 pt-5 pb-3 flex items-start justify-between"
+            [style.background]="
+              order.status === 'SENT_TO_KITCHEN' ? 'rgba(249,115,22,0.08)' :
+              order.status === 'PREPARING' ? 'rgba(59,130,246,0.08)' :
+              isReady(order) ? 'rgba(34,197,94,0.08)' : 'transparent'
+            "
+          >
+            <div>
+              <p class="text-gray-400 text-xs font-medium uppercase tracking-wider mb-1">{{ order.sessionType }} SESSION</p>
+              <h3 class="text-white text-3xl font-black">{{ order.tableNumber }}</h3>
+            </div>
+            <div class="flex flex-col items-end gap-2">
+              <span
+                class="text-xs font-bold px-3 py-1 rounded-full"
+                [style.background]="
+                  order.status === 'SENT_TO_KITCHEN' ? 'rgba(249,115,22,0.2)' :
+                  order.status === 'PREPARING' ? 'rgba(59,130,246,0.2)' :
+                  isReady(order) ? 'rgba(34,197,94,0.2)' : '#374151'
+                "
+                [style.color]="
+                  order.status === 'SENT_TO_KITCHEN' ? '#fb923c' :
+                  order.status === 'PREPARING' ? '#60a5fa' :
+                  isReady(order) ? '#4ade80' : '#9ca3af'
+                "
+              >
+                {{
+                  order.status === 'SENT_TO_KITCHEN' ? 'New Order' : order.status === 'PREPARING' ? 'Cooking…' : isReady(order) ? 'Ready' : order.status
+                }}
+              </span>
+              <span class="text-gray-500 text-xs">{{ order.createdAt | date: 'shortTime' }}</span>
+            </div>
+          </div>
+
+          <!-- Order items -->
+          <div class="px-5 py-4 flex flex-col gap-3 border-b" style="border-color: #2a2a2a;">
+            @for (item of order.items; track item.id) {
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex-1 min-w-0">
+                  <p class="text-white font-semibold text-sm truncate">{{ itemName(item) }}</p>
+                  @if (item.notes) {
+                    <p class="text-yellow-400 text-xs mt-0.5 flex items-center gap-1">
+                      <mat-icon style="font-size: 12px; width: 12px; height: 12px;">edit_note</mat-icon>
+                      {{ item.notes }}
+                    </p>
+                  }
+                </div>
+                <span
+                  class="flex-shrink-0 w-8 h-8 rounded-full bg-brand-500 text-white text-sm font-black flex items-center justify-center"
+                >
+                  {{ item.quantity }}
+                </span>
+              </div>
+            }
+          </div>
+
+          <!-- Order notes -->
+          @if (order.notes) {
+            <div
+              class="px-5 py-3 border-b flex items-start gap-2"
+              style="background: rgba(234,179,8,0.08); border-color: #2a2a2a;"
+            >
+              <mat-icon class="text-yellow-400 flex-shrink-0" style="font-size: 16px; width: 16px; height: 16px; margin-top: 2px;"
+                >sticky_note_2</mat-icon
+              >
+              <p class="text-yellow-300 text-sm">{{ order.notes }}</p>
+            </div>
+          }
+
+          <!-- Action buttons -->
+          <div class="px-5 py-4">
+            @if (order.status === 'SENT_TO_KITCHEN') {
+              <button
+                type="button"
+                class="w-full min-h-tap rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 text-white"
+                style="background: linear-gradient(135deg, #2563eb, #1d4ed8);"
+                (click)="startPreparing(order)"
+              >
+                <mat-icon style="font-size: 18px;">soup_kitchen</mat-icon>
+                Start Cooking
+              </button>
+            }
+
+            @if (order.status === 'PREPARING') {
+              <button
+                type="button"
+                class="w-full min-h-tap rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 text-white"
+                style="background: linear-gradient(135deg, #16a34a, #15803d);"
+                (click)="markReady(order)"
+              >
+                <mat-icon style="font-size: 18px;">check_circle</mat-icon>
+                Order Complete — Notify Waiter
+              </button>
+            }
+
+            @if (isReady(order)) {
+              <div
+                class="w-full min-h-tap rounded-xl text-sm font-bold flex items-center justify-center gap-2"
+                style="background: rgba(22,163,74,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.4);"
+              >
+                <mat-icon style="font-size: 18px;">hourglass_top</mat-icon>
+                Ready — Waiter notified
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

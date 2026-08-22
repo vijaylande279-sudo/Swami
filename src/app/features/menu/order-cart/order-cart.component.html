@@ -1,0 +1,87 @@
+<div class="flex flex-col max-h-[85vh] bg-surface-card">
+  <div class="flex items-center justify-between px-4 pt-4 pb-2">
+    <h2 class="text-xl font-bold text-white">Your Order</h2>
+    <button
+      type="button"
+      class="min-h-tap min-w-tap flex items-center justify-center rounded-full text-gray-400 hover:bg-surface-hover"
+      (click)="close()"
+      aria-label="Close"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="flex-1 overflow-y-auto px-4">
+    @if (cart.items().length === 0) {
+      <p class="text-base text-gray-400 py-8 text-center">No items added yet</p>
+    } @else {
+      <ul class="divide-y divide-surface-border">
+        @for (item of cart.items(); track item.menuItemId + '|' + item.notes) {
+          <li class="py-3 flex items-start gap-3">
+            <div class="flex-1 min-w-0">
+              <p class="text-base font-medium text-white truncate">{{ item.name }}</p>
+              @if (item.notes) {
+                <p class="text-sm text-gray-400 truncate">Note: {{ item.notes }}</p>
+              }
+              <button
+                type="button"
+                class="text-sm text-brand-500 mt-1 min-h-tap"
+                (click)="editNotes(item.menuItemId, item.notes)"
+              >
+                {{ item.notes ? 'Edit note' : 'Add note' }}
+              </button>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                class="min-h-tap min-w-tap flex items-center justify-center rounded-full border border-surface-border text-gray-300"
+                (click)="decrement(item.menuItemId, item.notes)"
+                aria-label="Decrease quantity"
+              >
+                <mat-icon>remove</mat-icon>
+              </button>
+              <span class="w-6 text-center text-base font-medium text-white">{{ item.quantity }}</span>
+              <button
+                type="button"
+                class="min-h-tap min-w-tap flex items-center justify-center rounded-full border border-surface-border text-gray-300"
+                (click)="increment(item.menuItemId, item.notes)"
+                aria-label="Increase quantity"
+              >
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+
+            <span class="w-20 text-right text-base font-medium shrink-0 text-white">
+              {{ item.quantity * item.unitPrice | currencyFormat }}
+            </span>
+
+            <button
+              type="button"
+              class="min-h-tap min-w-tap flex items-center justify-center rounded-full text-red-400"
+              (click)="remove(item.menuItemId, item.notes)"
+              aria-label="Remove item"
+            >
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+
+  <div class="border-t border-surface-border px-4 py-3 bg-surface-card">
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-base text-gray-400">Estimated Total</span>
+      <span class="text-xl font-bold text-white">{{ cart.estimatedTotal() | currencyFormat }}</span>
+    </div>
+    <button
+      type="button"
+      class="w-full min-h-tap rounded-lg bg-brand-600 text-white text-base font-semibold disabled:opacity-40"
+      [disabled]="cart.items().length === 0"
+      (click)="onSendToKitchen()"
+    >
+      Send to Kitchen
+    </button>
+  </div>
+</div>

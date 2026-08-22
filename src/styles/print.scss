@@ -1,0 +1,32 @@
+// @media print rules live here exclusively — never mix Tailwind classes into #printable-bill,
+// since Tailwind's generated utility classes are not guaranteed to be present at print time.
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #printable-bill,
+  #printable-bill * {
+    visibility: visible;
+  }
+
+  #printable-bill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+  }
+
+  .no-print,
+  app-navbar,
+  app-order-ready-notifier {
+    display: none !important;
+  }
+}
+
+@media screen {
+  #printable-bill {
+    display: none;
+  }
+}

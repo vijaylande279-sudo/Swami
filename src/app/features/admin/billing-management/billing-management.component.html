@@ -1,0 +1,31 @@
+<div class="p-4 max-w-2xl mx-auto flex flex-col gap-4">
+  @if (isLoading()) {
+    <app-loading-spinner label="Loading tables ready for billing…" />
+  } @else if (orders().length === 0) {
+    <p class="text-center text-base text-gray-400 py-8">No tables are waiting to be billed right now.</p>
+  } @else {
+    <ul class="flex flex-col gap-2">
+      @for (order of orders(); track order.id) {
+        <li class="rounded-xl border border-surface-border bg-surface-card p-4 flex items-center gap-3">
+          <div class="flex-1 min-w-0">
+            <p class="text-base font-semibold text-white truncate">Table {{ order.tableNumber }}</p>
+            <p class="text-sm text-gray-400">
+              {{ order.sessionType }} · {{ order.items.length }} item{{ order.items.length === 1 ? '' : 's' }} ·
+              {{ estimatedTotal(order) | currencyFormat }}
+            </p>
+          </div>
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            class="min-h-tap"
+            (click)="openBill(order)"
+          >
+            <mat-icon>receipt_long</mat-icon>
+            Generate Bill
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</div>

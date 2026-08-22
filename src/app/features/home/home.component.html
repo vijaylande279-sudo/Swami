@@ -1,0 +1,247 @@
+<div class="min-h-screen bg-surface text-white">
+  <!-- Public nav -->
+  <nav class="sticky top-0 z-40 bg-surface/95 backdrop-blur border-b border-surface-border">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div
+          class="flex items-center justify-center w-9 h-9 rounded-xl"
+          style="background: linear-gradient(135deg, #f97316, #ef4444);"
+        >
+          <span class="text-lg">🏨</span>
+        </div>
+        <span class="font-black tracking-wide text-sm sm:text-base">SWAMI RESTAURANT</span>
+      </div>
+
+      <div class="hidden md:flex items-center gap-8 text-sm text-gray-300">
+        <a href="#home" class="hover:text-white transition-colors">Home</a>
+        <a href="#menu" class="hover:text-white transition-colors">Menu</a>
+        <a href="#about" class="hover:text-white transition-colors">About</a>
+        <a href="#contact" class="hover:text-white transition-colors">Contact</a>
+      </div>
+
+      <a
+        routerLink="/login"
+        class="min-h-tap flex items-center px-4 rounded-xl text-sm font-bold text-white transition-transform active:scale-95"
+        style="background: linear-gradient(135deg, #f97316, #ef4444);"
+      >
+        Sign In
+      </a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section id="home" class="relative overflow-hidden">
+    <div
+      class="absolute inset-0 opacity-10"
+      style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;"
+    ></div>
+
+    <div class="relative max-w-6xl mx-auto px-4 py-16 sm:py-24 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+      <div>
+        <span
+          class="inline-block px-3 py-1 rounded-full text-xs font-bold mb-4"
+          style="background: rgba(249,115,22,0.15); color: #fb923c; border: 1px solid rgba(249,115,22,0.3);"
+        >
+        Veg And Non-Veg Dishes Available
+        </span>
+        <h1 class="text-4xl sm:text-6xl font-black leading-tight mb-4">
+          Taste the
+          <span
+            style="background: linear-gradient(135deg, #f97316, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"
+            >Tradition</span
+          >
+          of Veg & Non-Veg Cuisine
+        </h1>
+        <p class="text-gray-400 text-lg mb-8 max-w-md">
+          Freshly prepared vegetarian dishes, warm hospitality, and a dining experience made for every craving.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a
+            routerLink="/login"
+            class="min-h-tap flex items-center px-6 rounded-xl text-base font-bold text-white shadow-lg"
+            style="background: linear-gradient(135deg, #f97316, #ef4444); box-shadow: 0 10px 30px rgba(249,115,22,0.35);"
+          >
+            Staff Sign In
+          </a>
+          <a
+            href="#menu"
+            class="min-h-tap flex items-center px-6 rounded-xl text-base font-bold text-white border border-surface-border hover:bg-surface-card transition-colors"
+          >
+            View Menu
+          </a>
+        </div>
+
+        <div class="flex gap-8 mt-10 text-sm text-gray-400">
+          <div class="flex flex-col items-center gap-1">
+            <span class="text-2xl">🍽️</span>
+            <span>Fine Dining</span>
+          </div>
+          <div class="flex flex-col items-center gap-1">
+            <span class="text-2xl">⚡</span>
+            <span>Fast Orders</span>
+          </div>
+          <div class="flex flex-col items-center gap-1">
+            <span class="text-2xl">📱</span>
+            <span>Mobile Ready</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-center">
+        <div
+          class="w-full aspect-square max-w-sm rounded-3xl flex items-center justify-center text-[10rem]"
+          style="background: linear-gradient(135deg, rgba(249,115,22,0.2), rgba(239,68,68,0.1)); border: 1px solid rgba(249,115,22,0.25);"
+        >
+          🍛
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured dishes -->
+  <section id="menu" class="max-w-6xl mx-auto px-4 py-16">
+    <div class="text-center mb-10">
+      <h2 class="text-3xl sm:text-4xl font-black mb-2">
+        Our
+        <span
+          style="background: linear-gradient(135deg, #f97316, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"
+          >Special</span
+        >
+        Dishes
+      </h2>
+      <p class="text-gray-400">A taste of what's waiting for you at our tables</p>
+    </div>
+
+    <div class="flex items-center gap-3 sm:gap-5">
+      <button
+        type="button"
+        class="hidden sm:flex flex-shrink-0 min-h-tap min-w-tap items-center justify-center rounded-full text-white transition-colors"
+        style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);"
+        (click)="prevPage()"
+        aria-label="Previous dishes"
+      >
+        <span class="text-xl leading-none">‹</span>
+      </button>
+
+      <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        @for (dish of visibleDishes(); track dish.name) {
+          <div
+            class="rounded-2xl bg-surface-card border border-surface-border p-5 flex items-center gap-4 transition-colors hover:border-brand-500/50"
+          >
+            <div
+              class="w-16 h-16 rounded-xl flex items-center justify-center text-3xl flex-shrink-0"
+              style="background: rgba(249,115,22,0.12);"
+            >
+              {{ dish.emoji }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-bold text-white truncate">{{ dish.name }}</p>
+              <p class="text-sm text-gray-400 truncate">{{ dish.description }}</p>
+              <p class="text-sm font-bold mt-1" style="color: #fb923c;">{{ dish.price }}</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <button
+        type="button"
+        class="hidden sm:flex flex-shrink-0 min-h-tap min-w-tap items-center justify-center rounded-full text-white transition-colors"
+        style="background: linear-gradient(135deg, #f97316, #ef4444);"
+        (click)="nextPage()"
+        aria-label="Next dishes"
+      >
+        <span class="text-xl leading-none">›</span>
+      </button>
+    </div>
+
+    <!-- Mobile controls + page indicator -->
+    <div class="flex items-center justify-center gap-4 mt-6">
+      <button
+        type="button"
+        class="sm:hidden min-h-tap min-w-tap flex items-center justify-center rounded-full text-white"
+        style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);"
+        (click)="prevPage()"
+        aria-label="Previous dishes"
+      >
+        <span class="text-xl leading-none">‹</span>
+      </button>
+
+      <div class="flex items-center gap-2">
+        @for (page of pageIndices; track page) {
+          <button
+            type="button"
+            class="rounded-full transition-all"
+            [style.width]="pageIndex() === page ? '20px' : '6px'"
+            [style.height]="'6px'"
+            [style.background]="pageIndex() === page ? 'linear-gradient(135deg, #f97316, #ef4444)' : 'rgba(255,255,255,0.15)'"
+            (click)="goToPage(page)"
+            [attr.aria-label]="'Go to dishes page ' + (page + 1)"
+          ></button>
+        }
+      </div>
+
+      <button
+        type="button"
+        class="sm:hidden min-h-tap min-w-tap flex items-center justify-center rounded-full text-white"
+        style="background: linear-gradient(135deg, #f97316, #ef4444);"
+        (click)="nextPage()"
+        aria-label="Next dishes"
+      >
+        <span class="text-xl leading-none">›</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="max-w-6xl mx-auto px-4 py-16">
+    <div
+      class="rounded-3xl p-8 sm:p-12 text-center"
+      style="background: linear-gradient(135deg, rgba(249,115,22,0.12), rgba(239,68,68,0.06)); border: 1px solid rgba(249,115,22,0.2);"
+    >
+      <h2 class="text-2xl sm:text-3xl font-black mb-3">Why Dine With Us</h2>
+      <p class="text-gray-300 max-w-2xl mx-auto">
+        For years, Swami Veg/Non-veg has served fresh, hygienic, and flavourful vegetarian food made with love. From
+        family lunches to festive dinners, our kitchen and staff are dedicated to making every visit memorable.
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer / contact -->
+  <footer id="contact" class="border-t border-surface-border">
+    <div class="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 sm:grid-cols-3 gap-8">
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <div
+            class="flex items-center justify-center w-8 h-8 rounded-lg"
+            style="background: linear-gradient(135deg, #f97316, #ef4444);"
+          >
+            <span class="text-sm">🏨</span>
+          </div>
+          <span class="font-black tracking-wide text-sm">SWAMI RESTAURANT</span>
+        </div>
+        <p class="text-sm text-gray-400">vegetarian and Non-Vegetarian dining, done right.</p>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-bold text-gray-200 mb-3">Address</h3>
+        <p class="text-sm text-gray-400">
+          123 Pune, Near City pune,<br />
+          Pune, Maharashtra 411035
+        </p>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-bold text-gray-200 mb-3">Contact</h3>
+        <p class="text-sm text-gray-400">
+          Phone: +91 9529768897<br />
+          Email: hello&#64;swamiveg/non-veg.com<br />
+          Open daily: 11:00 AM – 11:00 PM
+        </p>
+      </div>
+    </div>
+
+    <div class="border-t border-surface-border">
+      <p class="text-center text-xs text-gray-500 py-4">© {{ year }} Swami Pure Veg. All rights reserved.</p>
+    </div>
+  </footer>
+</div>
