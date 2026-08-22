@@ -1,77 +1,108 @@
-# Hotel Order Management — Frontend
+# Swami — Hotel Order Management System
 
-Mobile-first Angular app for waiters, kitchen staff, and admins. Built per
-[FRONTEND_GUIDE.md](./FRONTEND_GUIDE.md); read that file before making changes.
+A real-time order management system for a restaurant: waiters take orders on tablets, the
+kitchen sees live order tickets, and admins manage the menu, tables, and billing (with UPI
+QR-code payment).
 
-## Stack notes
+## Structure
 
-- **State management:** Angular Signals (not NgRx) — the cart and every feature
-  component use `signal`/`computed` consistently. See `src/app/store/cart/cart.store.ts`.
-- **Styling:** Tailwind CSS v3 for layout/spacing, Angular Material (M3 theming via
-  `mat.theme()`, orange primary palette) for interactive components.
-- **Auth:** JWT kept in memory only inside `AuthService` — never `localStorage`. A page
-  refresh logs the user out by design.
-- **Real-time:** `@stomp/stompjs` + `sockjs-client`, wired through `SocketService`.
-  `sockjs-client` is dynamically imported inside `connect()` so it never loads during SSR
-  or before the user is authenticated.
-- **Rendering:** SSR scaffolding is present (Angular CLI default) but every route renders
-  `RenderMode.Client` — this is an authenticated, real-time ops tool with nothing to
-  prerender or index. See `src/app/app.routes.server.ts`.
+This is a monorepo with two independently deployed apps:
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.12.
-
-## Development server
-
-To start a local development server, run:
-
-```bash
-ng serve
+```
+backend/   Spring Boot 3 (Java 17) REST API + WebSocket (STOMP) + PostgreSQL
+frontend/  Angular 21 SPA (SSR-capable) — waiter, kitchen, and admin views
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Each has its own `Dockerfile` and deploys as a separate service.
 
-## Code scaffolding
+## Local development
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+**Backend** — needs a local PostgreSQL database named `hotel_oms`:
 
 ```bash
-ng generate --help
+cd backend
+./mvnw spring-boot:run
 ```
 
-## Building
+Runs on `http://localhost:8080`. See `backend/src/main/resources/application.yml` for
+configuration (all overridable via environment variables).
 
-To build the project run:
+**Frontend**:
 
 ```bash
-ng build
+cd frontend
+npm install
+npm start
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Runs on `http://localhost:4200` and expects the backend at `http://localhost:8080`
+(see `frontend/src/environments/environment.ts`).
 
-## Running unit tests
+## Deploying to Railway
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+Both apps deploy as separate Railway services from this one repo, each with its **Root
+Directory** set to `backend` or `frontend` in the Railway dashboard (Settings → Root
+Directory). Railway auto-detects each `Dockerfile`.
 
-```bash
-ng test
-```
+### 1. Database
 
-## Running end-to-end tests
+Add a **PostgreSQL** plugin to your Railway project (New → Database → PostgreSQL). Railway
+provisions it and exposes `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD` variables
+automatically.
 
-For end-to-end (e2e) testing, run:
+### 2. Backend service
 
-```bash
-ng e2e
-```
+- Root Directory: `backend`
+- Environment variables:
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+  | Variable | Value |
+  |---|---|
+  | `DATABASE_URL` | `jdbc:postgresql://${{Postgres.PGHOST}}:${{Postgres.PGPORT}}/${{Postgres.PGDATABASE}}` |
+  | `DB_USER` | `${{Postgres.PGUSER}}` |
+  | `DB_PASSWORD` | `${{Postgres.PGPASSWORD}}` |
+  | `JWT_SECRET` | a random string, 32+ characters (required — no default in prod) |
+  | `FRONTEND_URL` | the frontend service's public URL (for CORS), e.g. `https://swami-frontend.up.railway.app` |
+  | `HOTEL_NAME` | `Swami Hotel` (or your own) |
+  | `HOTEL_UPI_ID` | your UPI ID for the payment QR code |
+  | `HOTEL_TAX_PERCENT` | e.g. `5` |
 
-## Additional Resources
+  Railway's `${{ServiceName.VAR}}` syntax references another service/plugin's variables —
+  use the reference picker in the Railway dashboard rather than typing it by hand.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+  `SPRING_PROFILES_ACTIVE=prod` and `PORT` are already handled by the Dockerfile/app config —
+  no need to set them manually.
+
+- Once deployed, note the backend's public URL (Settings → Networking → Generate Domain).
+
+### 3. Frontend service
+
+- Root Directory: `frontend`
+- Before deploying, update `frontend/src/environments/environment.prod.ts` with the
+  backend's actual public URL from step 2, then commit and push:
+
+  ```ts
+  export const environment = {
+    production: true,
+    apiUrl: 'https://your-backend.up.railway.app',
+    wsUrl: 'https://your-backend.up.railway.app',
+  };
+  ```
+
+- Railway sets `PORT` automatically; the Angular SSR server (`frontend/src/server.ts`)
+  already reads it.
+- Generate a public domain for this service too (Settings → Networking).
+
+### 4. Wire them together
+
+Once both have public URLs, double check:
+- Backend's `FRONTEND_URL` env var matches the frontend's actual domain (CORS).
+- Frontend's `environment.prod.ts` `apiUrl`/`wsUrl` match the backend's actual domain.
+
+Redeploy either service after changing either of these.
+
+## First admin user
+
+There's no self-service admin signup. After the backend is deployed and migrations have
+run, insert an admin user directly via Railway's Postgres data tab (or `psql`), with a
+bcrypt-hashed password (strength 12) — see `backend/BACKEND_GUIDE (2).md` for the exact
+schema and role values.

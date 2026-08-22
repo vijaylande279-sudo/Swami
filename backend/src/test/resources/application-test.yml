@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:hotel_oms_test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate.dialect: org.hibernate.dialect.H2Dialect
+  flyway:
+    enabled: true
+    # H2 doesn't support PostgreSQL-specific types like TIMESTAMPTZ, so tests use an
+    # H2-compatible mirror of the real migrations instead of classpath:db/migration.
+    locations: classpath:db/test-migration
+
+app:
+  jwt:
+    secret: test-only-secret-key-change-me-32-chars-min
+    expiration-ms: 28800000
+  frontend-url: http://localhost:5173
+
+hotel:
+  name: Swami Hotel
+  upi:
+    id: swamihotel@upi
+  tax:
+    percent: 5

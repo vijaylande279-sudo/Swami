@@ -1,0 +1,13 @@
+spring:
+  jpa:
+    show-sql: true
+
+app:
+  jwt:
+    # Dev-only fallback secret (32+ chars). Override with JWT_SECRET env var. Never use in prod.
+    secret: ${JWT_SECRET:dev-only-secret-key-change-me-32-chars-min}
+
+logging:
+  level:
+    com.hotel.oms: DEBUG
+    org.hibernate.SQL: DEBUG
