@@ -1,0 +1,6 @@
+# Shared defaults served by config-server to every swami-suite service that opts in
+# via `spring.config.import=optional:configserver:...`. Phase 0 placeholder only —
+# real shared config (Kafka brokers, Redis, common feature flags) lands as services
+# that need them are built in later phases.
+swamisuite:
+  platform-name: swami-suite

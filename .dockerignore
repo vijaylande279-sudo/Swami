@@ -1,0 +1,11 @@
+# Repo-root dockerignore, applies to every service Dockerfile that uses the repo
+# root as its build context (infra/docker-compose.yml sets `context: ..`).
+**/target/
+**/.mvn/wrapper/maven-wrapper.jar
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+backend/target/
+.git/
+.github/
+docs/

@@ -1,0 +1,4 @@
+# Placeholder per-service config for hello-service, proving config-server can serve
+# service-specific configuration by application name.
+hello-service:
+  greeting: "Swami Suite platform is alive"

@@ -22,6 +22,11 @@ backend/.idea/
 backend/*.iml
 backend/HELP.md
 
+# Platform (Maven / Java, multi-module) — platform/
+platform/**/target/
+platform/.idea/
+platform/**/*.iml
+
 # IDEs and editors
 .idea/
 .project
