@@ -158,6 +158,89 @@ services:
       identity-service:
         condition: service_started
 
+  catalog-service:
+    build:
+      context: ..
+      dockerfile: platform/platform-services/catalog-service/Dockerfile
+    ports:
+      - "8083:8083"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_catalog
+      SPRING_DATASOURCE_USERNAME: swami
+      SPRING_DATASOURCE_PASSWORD: swami
+      SWAMISUITE_SERVICES_INTERNALTOKEN: dev-internal-token-change-me
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+
+  subscription-service:
+    build:
+      context: ..
+      dockerfile: platform/platform-services/subscription-service/Dockerfile
+    ports:
+      - "8084:8084"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_subscription
+      SPRING_DATASOURCE_USERNAME: swami
+      SPRING_DATASOURCE_PASSWORD: swami
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SWAMISUITE_JWT_JWKSCLIENT_URL: http://identity-service:8081/.well-known/jwks.json
+      SWAMISUITE_SERVICES_CATALOGSERVICEURL: http://catalog-service:8083
+      SWAMISUITE_SERVICES_TENANTSERVICEURL: http://tenant-service:8082
+      SWAMISUITE_SERVICES_INTERNALTOKEN: dev-internal-token-change-me
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      catalog-service:
+        condition: service_started
+      tenant-service:
+        condition: service_started
+
+  payment-service:
+    build:
+      context: ..
+      dockerfile: platform/platform-services/payment-service/Dockerfile
+    ports:
+      - "8085:8085"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_payment
+      SPRING_DATASOURCE_USERNAME: swami
+      SPRING_DATASOURCE_PASSWORD: swami
+      SWAMISUITE_JWT_JWKSCLIENT_URL: http://identity-service:8081/.well-known/jwks.json
+      SWAMISUITE_SERVICES_SUBSCRIPTIONSERVICEURL: http://subscription-service:8084
+      SWAMISUITE_SERVICES_INTERNALTOKEN: dev-internal-token-change-me
+      # Set these once you have Razorpay test-mode credentials - unset is fine for
+      # build/local-platform-up, but checkout/webhook calls will fail until they're real.
+      # SWAMISUITE_RAZORPAY_KEYID: rzp_test_...
+      # SWAMISUITE_RAZORPAY_KEYSECRET: ...
+      # SWAMISUITE_RAZORPAY_WEBHOOKSECRET: ...
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      subscription-service:
+        condition: service_started
+
   hello-service:
     build:
       context: ..

@@ -3,3 +3,6 @@
 -- later phases add catalog-service, subscription-service, etc.
 CREATE DATABASE db_identity;
 CREATE DATABASE db_tenant;
+CREATE DATABASE db_catalog;
+CREATE DATABASE db_subscription;
+CREATE DATABASE db_payment;

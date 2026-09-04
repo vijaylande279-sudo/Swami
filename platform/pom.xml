@@ -32,6 +32,7 @@
         <module>platform-services/tenant-service</module>
         <module>platform-services/catalog-service</module>
         <module>platform-services/subscription-service</module>
+        <module>platform-services/payment-service</module>
     </modules>
 
     <properties>

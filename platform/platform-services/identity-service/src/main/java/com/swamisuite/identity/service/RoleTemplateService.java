@@ -23,7 +23,12 @@ public class RoleTemplateService {
     private static final List<String> TENANT_ADMIN_PERMISSIONS = List.of(
             "tenant:profile:read", "tenant:profile:update",
             "tenant:employee:invite", "tenant:employee:read", "tenant:employee:revoke",
-            "tenant:role:create", "tenant:role:manage", "tenant:role:read"
+            "tenant:role:create", "tenant:role:manage", "tenant:role:read",
+            // Doc §15.7: only TENANT_ADMIN may start a checkout - seeded directly here,
+            // not exposed through the custom role builder (RoleService filters every
+            // platform:* permission out of GET /permissions), so it can't be delegated
+            // to an arbitrary employee role.
+            "platform:billing:purchase"
     );
 
     private static final List<String> TENANT_MANAGER_PERMISSIONS = List.of(

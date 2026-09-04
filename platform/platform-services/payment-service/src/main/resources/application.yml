@@ -1,0 +1,46 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: payment-service
+  config:
+    import: "optional:configserver:http://localhost:8888"
+  datasource:
+    url: jdbc:postgresql://localhost:5432/db_payment
+    username: swami
+    password: swami
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+swamisuite:
+  jwt:
+    jwks-client:
+      url: http://localhost:8081/.well-known/jwks.json
+      refresh-interval-seconds: 600
+  services:
+    subscription-service-url: http://localhost:8084
+    internal-token: dev-internal-token-change-me
+  razorpay:
+    # Unset by default - real sandbox test-mode credentials go here via env vars once
+    # obtained. Never committed. See docs/adr/0002-payment-gateway-razorpay.md.
+    key-id: ""
+    key-secret: ""
+    webhook-secret: ""
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
