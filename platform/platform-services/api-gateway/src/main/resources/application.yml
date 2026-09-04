@@ -34,6 +34,15 @@ spring:
           uri: lb://HELLO-SERVICE
           predicates:
             - Path=/hello/**
+        # Phase 2's entitlement-filter proof route - not a real business app, just
+        # the same disposable hello-service, now reachable under the /api/{appKey}/**
+        # convention every future business-app service will also use.
+        - id: hello-service-entitlement-check
+          uri: lb://HELLO-SERVICE
+          predicates:
+            - Path=/api/hello/**
+          filters:
+            - StripPrefix=2
         - id: identity-service
           uri: lb://IDENTITY-SERVICE
           predicates:
@@ -42,6 +51,18 @@ spring:
           uri: lb://TENANT-SERVICE
           predicates:
             - Path=/tenants/**,/invites/**
+        - id: catalog-service
+          uri: lb://CATALOG-SERVICE
+          predicates:
+            - Path=/catalog/**
+        - id: subscription-service
+          uri: lb://SUBSCRIPTION-SERVICE
+          predicates:
+            - Path=/subscriptions/**
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/payments/**
 
 swamisuite:
   jwt:
