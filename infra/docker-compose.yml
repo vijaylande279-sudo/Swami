@@ -226,11 +226,13 @@ services:
       SWAMISUITE_JWT_JWKSCLIENT_URL: http://identity-service:8081/.well-known/jwks.json
       SWAMISUITE_SERVICES_SUBSCRIPTIONSERVICEURL: http://subscription-service:8084
       SWAMISUITE_SERVICES_INTERNALTOKEN: dev-internal-token-change-me
-      # Set these once you have Razorpay test-mode credentials - unset is fine for
-      # build/local-platform-up, but checkout/webhook calls will fail until they're real.
-      # SWAMISUITE_RAZORPAY_KEYID: rzp_test_...
-      # SWAMISUITE_RAZORPAY_KEYSECRET: ...
-      # SWAMISUITE_RAZORPAY_WEBHOOKSECRET: ...
+      # Real values come from your shell environment (see README/chat instructions),
+      # never written here - docker compose substitutes ${VAR} from the environment
+      # it's invoked in. Empty defaults keep `up` working with no checkout/webhook
+      # capability until real values are exported.
+      SWAMISUITE_RAZORPAY_KEYID: ${SWAMISUITE_RAZORPAY_KEYID:-}
+      SWAMISUITE_RAZORPAY_KEYSECRET: ${SWAMISUITE_RAZORPAY_KEYSECRET:-}
+      SWAMISUITE_RAZORPAY_WEBHOOKSECRET: ${SWAMISUITE_RAZORPAY_WEBHOOKSECRET:-}
     depends_on:
       discovery-server:
         condition: service_healthy
