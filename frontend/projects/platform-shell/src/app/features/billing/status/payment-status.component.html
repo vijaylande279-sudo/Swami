@@ -1,0 +1,18 @@
+<div class="max-w-sm mx-auto mt-20 bg-white rounded-lg shadow p-8 text-center">
+  @switch (status()) {
+    @case ('PAID') {
+      <h1 class="text-xl font-semibold text-green-700 mb-2">Payment received</h1>
+      <p class="text-sm text-platform-500 mb-6">Your subscription is now active.</p>
+      <a routerLink="/console" class="bg-platform-800 text-white rounded px-3 py-2 inline-block">Go to dashboard</a>
+    }
+    @case ('FAILED') {
+      <h1 class="text-xl font-semibold text-red-700 mb-2">Payment failed</h1>
+      <p class="text-sm text-platform-500 mb-6">No charge was made. You can try again from the catalog.</p>
+      <a routerLink="/" class="bg-platform-800 text-white rounded px-3 py-2 inline-block">Back to catalog</a>
+    }
+    @default {
+      <h1 class="text-xl font-semibold text-platform-900 mb-2">Waiting for confirmation…</h1>
+      <p class="text-sm text-platform-500">This can take a minute. It's safe to leave this page — we'll have it ready when you come back.</p>
+    }
+  }
+</div>

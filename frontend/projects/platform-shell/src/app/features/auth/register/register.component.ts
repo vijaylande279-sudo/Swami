@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { TenantContextService } from '../../../core/services/tenant-context.service';
 
@@ -16,6 +16,8 @@ export class RegisterComponent {
   private auth = inject(AuthService);
   private tenantContext = inject(TenantContextService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private subscribeTo = this.route.snapshot.queryParamMap.get('subscribeTo');
 
   readonly isSubmitting = signal(false);
   readonly errorMessage = signal('');
@@ -38,7 +40,11 @@ export class RegisterComponent {
       next: () => {
         this.auth.fetchMe().subscribe(() => {
           this.tenantContext.loadCurrentTenant().subscribe();
-          this.router.navigate(['/']);
+          if (this.subscribeTo) {
+            this.router.navigate(['/console/checkout', this.subscribeTo]);
+          } else {
+            this.router.navigate(['/console']);
+          }
         });
       },
       error: (err: unknown) => {

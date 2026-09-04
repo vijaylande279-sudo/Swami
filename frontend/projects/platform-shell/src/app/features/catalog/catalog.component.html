@@ -1,0 +1,32 @@
+<div class="flex flex-col gap-10">
+  <header class="text-center py-10">
+    <h1 class="text-3xl font-semibold text-platform-900">Swami Suite</h1>
+    <p class="text-platform-500 mt-2">One platform, four business apps. Pick what you need, pay yearly, get to work.</p>
+    <div class="flex justify-center gap-4 mt-6">
+      <a routerLink="/login" class="px-4 py-2 rounded border border-platform-300 text-platform-700">Sign in</a>
+      <a routerLink="/register" class="px-4 py-2 rounded bg-platform-800 text-white">Create an account</a>
+    </div>
+  </header>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    @for (app of apps(); track app.key) {
+      <div class="bg-white rounded-lg shadow p-6 flex flex-col gap-4">
+        <div>
+          <h2 class="text-lg font-semibold text-platform-900">{{ app.name }}</h2>
+          <p class="text-sm text-platform-500 mt-1">{{ app.description }}</p>
+        </div>
+
+        @if (app.plan; as plan) {
+          <div class="mt-auto">
+            <p class="text-2xl font-semibold text-platform-900">
+              &#8377;{{ formatRupees(plan.totalPaise) }}<span class="text-sm font-normal text-platform-500">/year</span>
+            </p>
+            <p class="text-xs text-platform-500">Incl. 18% GST</p>
+          </div>
+        }
+
+        <button (click)="subscribe(app.key)" class="bg-platform-800 text-white rounded px-3 py-2 mt-2">Subscribe</button>
+      </div>
+    }
+  </div>
+</div>
