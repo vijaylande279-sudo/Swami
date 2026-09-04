@@ -49,4 +49,8 @@ export class RoleBuilderComponent implements OnInit {
       error: () => this.isSubmitting.set(false),
     });
   }
+
+  deleteRole(roleId: string): void {
+    this.roleService.deleteRole(roleId).subscribe(() => this.reload());
+  }
 }

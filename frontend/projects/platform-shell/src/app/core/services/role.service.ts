@@ -22,4 +22,8 @@ export class RoleService {
   updatePermissions(roleId: string, permissionCodes: string[]) {
     return this.http.put<RoleResponse>(`${environment.apiUrl}/roles/${roleId}/permissions`, { permissionCodes });
   }
+
+  deleteRole(roleId: string) {
+    return this.http.delete<void>(`${environment.apiUrl}/roles/${roleId}`);
+  }
 }

@@ -38,6 +38,12 @@ public class RoleController {
         return roleService.updatePermissions(currentTenantId(authentication), id, request.permissionCodes());
     }
 
+    @DeleteMapping("/roles/{id}")
+    @PreAuthorize("hasAuthority('tenant:role:manage')")
+    public void deleteRole(Authentication authentication, @PathVariable UUID id) {
+        roleService.deleteRole(currentTenantId(authentication), id);
+    }
+
     @GetMapping("/permissions")
     public List<PermissionResponse> listPermissions() {
         return roleService.listPermissions();

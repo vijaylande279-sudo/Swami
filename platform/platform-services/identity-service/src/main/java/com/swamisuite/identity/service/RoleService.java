@@ -45,6 +45,16 @@ public class RoleService {
         return toResponse(roleRepository.save(role));
     }
 
+    public void deleteRole(UUID tenantId, UUID roleId) {
+        Role role = requireOwnedRole(tenantId, roleId);
+        if (role.isSystem()) {
+            throw new AuthService.AuthException("System roles cannot be deleted");
+        }
+        // user_roles has ON DELETE CASCADE on role_id (V3__create_user_roles.sql),
+        // so any employees currently holding this role are simply unassigned from it.
+        roleRepository.delete(role);
+    }
+
     /** Only permissions a Tenant Admin may actually assign - never platform:* (cross-tenant, PLATFORM_SUPER_ADMIN/PLATFORM_SUPPORT only). */
     public List<PermissionResponse> listPermissions() {
         return permissionRepository.findAll().stream()
