@@ -1,0 +1,49 @@
+<div class="flex flex-col gap-8">
+  <h1 class="text-xl font-semibold text-platform-900">Roles</h1>
+
+  <section *appHasPermission="'tenant:role:create'" class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-sm font-medium text-platform-700 mb-4">Create a custom role</h2>
+
+    <form [formGroup]="form" (ngSubmit)="createRole()" class="flex flex-col gap-4">
+      <label class="flex flex-col gap-1 text-sm text-platform-700 max-w-xs">
+        Role name
+        <input formControlName="name" class="border border-platform-300 rounded px-3 py-2" />
+      </label>
+
+      <div class="grid grid-cols-2 gap-2">
+        @for (permission of permissions(); track permission.code) {
+          <label class="flex items-center gap-2 text-sm text-platform-700">
+            <input type="checkbox" (change)="togglePermission(permission.code, $any($event.target).checked)" />
+            {{ permission.code }}
+          </label>
+        }
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="form.invalid || isSubmitting()"
+        class="bg-platform-800 text-white rounded px-3 py-2 disabled:opacity-50 w-fit"
+      >
+        {{ isSubmitting() ? 'Creating…' : 'Create role' }}
+      </button>
+    </form>
+  </section>
+
+  <section class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-sm font-medium text-platform-700 mb-4">Roles</h2>
+    <table class="w-full text-sm">
+      <thead class="text-left text-platform-500">
+        <tr><th class="pb-2">Name</th><th class="pb-2">System</th><th class="pb-2">Permissions</th></tr>
+      </thead>
+      <tbody>
+        @for (role of roles(); track role.id) {
+          <tr class="border-t border-platform-100">
+            <td class="py-2">{{ role.name }}</td>
+            <td class="py-2">{{ role.system ? 'Yes' : 'No' }}</td>
+            <td class="py-2 text-xs text-platform-500">{{ role.permissions.join(', ') }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+</div>

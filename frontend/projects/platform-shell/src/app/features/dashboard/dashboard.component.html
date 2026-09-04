@@ -1,0 +1,19 @@
+<div class="flex flex-col gap-6">
+  <h1 class="text-xl font-semibold text-platform-900">Welcome{{ auth.currentUser()?.fullName ? ', ' + auth.currentUser()?.fullName : '' }}</h1>
+
+  @if (tenant.current(); as t) {
+    <div class="bg-white rounded-lg shadow p-6 max-w-lg">
+      <h2 class="text-sm font-medium text-platform-700 mb-2">{{ t.name }}</h2>
+      <p class="text-sm text-platform-500">Status: {{ t.status }}</p>
+      @if (t.trialEndsAt) {
+        <p class="text-sm text-platform-500">Trial ends: {{ t.trialEndsAt | date }}</p>
+      }
+    </div>
+  }
+
+  <div class="flex gap-3">
+    <a routerLink="/employees" class="text-sm text-platform-700 underline">Manage employees</a>
+    <a routerLink="/roles" class="text-sm text-platform-700 underline">Manage roles</a>
+    <a routerLink="/mfa-enrollment" class="text-sm text-platform-700 underline">Set up two-factor authentication</a>
+  </div>
+</div>

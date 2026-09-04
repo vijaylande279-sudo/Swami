@@ -1,0 +1,31 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-wrap items-end gap-3">
+  <label class="flex flex-col gap-1 text-sm text-platform-700">
+    Email
+    <input formControlName="email" type="email" class="border border-platform-300 rounded px-3 py-2" />
+  </label>
+
+  <label class="flex flex-col gap-1 text-sm text-platform-700">
+    Role
+    <select formControlName="roleName" class="border border-platform-300 rounded px-3 py-2">
+      <option value="" disabled>Select a role</option>
+      @for (role of roles; track role.id) {
+        <option [value]="role.name">{{ role.name }}</option>
+      }
+    </select>
+  </label>
+
+  <button
+    type="submit"
+    [disabled]="form.invalid || isSubmitting()"
+    class="bg-platform-800 text-white rounded px-3 py-2 disabled:opacity-50"
+  >
+    {{ isSubmitting() ? 'Sending…' : 'Invite' }}
+  </button>
+</form>
+
+@if (lastInvite(); as invite) {
+  <p class="text-sm text-platform-600 mt-3">
+    Invite created for {{ invite.email }}. Dev-mode: share this accept link manually (no email service yet) —
+    <code class="bg-platform-100 rounded px-2 py-1 text-xs">/accept-invite?token={{ invite.inviteToken }}</code>
+  </p>
+}

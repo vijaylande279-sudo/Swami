@@ -1,0 +1,43 @@
+<div class="max-w-lg bg-white rounded-lg shadow p-8">
+  <h1 class="text-xl font-semibold text-platform-900 mb-1">Two-factor authentication</h1>
+  <p class="text-sm text-platform-500 mb-6">Protect your account with an authenticator app (Google Authenticator, Authy, 1Password, etc).</p>
+
+  @if (!enrollment()) {
+    <button (click)="startEnrollment()" class="bg-platform-800 text-white rounded px-3 py-2">Start enrollment</button>
+  } @else if (!backupCodes()) {
+    <div class="flex flex-col gap-4">
+      <div>
+        <p class="text-sm text-platform-700 mb-1">
+          Add this account manually in your authenticator app using the secret below, or paste the setup URI:
+        </p>
+        <code class="block bg-platform-100 rounded p-2 text-xs break-all">{{ enrollment()?.secret }}</code>
+        <code class="block bg-platform-100 rounded p-2 text-xs break-all mt-2">{{ enrollment()?.otpAuthUri }}</code>
+      </div>
+
+      <form [formGroup]="verifyForm" (ngSubmit)="verify()" class="flex flex-col gap-3">
+        <label class="flex flex-col gap-1 text-sm text-platform-700">
+          Enter the 6-digit code to confirm
+          <input formControlName="code" class="border border-platform-300 rounded px-3 py-2" />
+        </label>
+        <button
+          type="submit"
+          [disabled]="verifyForm.invalid || isSubmitting()"
+          class="bg-platform-800 text-white rounded px-3 py-2 disabled:opacity-50"
+        >
+          Confirm and enable
+        </button>
+      </form>
+    </div>
+  } @else {
+    <div class="flex flex-col gap-3">
+      <p class="text-sm text-platform-700">
+        Save these backup codes somewhere safe — each works once if you lose access to your authenticator app.
+      </p>
+      <ul class="grid grid-cols-2 gap-2">
+        @for (code of backupCodes(); track code) {
+          <li class="bg-platform-100 rounded px-3 py-2 text-center font-mono text-sm">{{ code }}</li>
+        }
+      </ul>
+    </div>
+  }
+</div>

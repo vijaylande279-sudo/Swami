@@ -1,0 +1,28 @@
+@use '@angular/material' as mat;
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// Deliberately neutral, dense, data-first identity for the platform shell — no
+// decoration, unlike the four vertical apps' distinct themes (§8.2).
+html {
+  @include mat.theme(
+    (
+      color: (
+        theme-type: light,
+        primary: mat.$blue-palette,
+        tertiary: mat.$cyan-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+body {
+  margin: 0;
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
