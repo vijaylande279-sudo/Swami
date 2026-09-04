@@ -28,6 +28,8 @@
         <module>platform-services/config-server</module>
         <module>platform-services/api-gateway</module>
         <module>platform-services/hello-service</module>
+        <module>platform-services/identity-service</module>
+        <module>platform-services/tenant-service</module>
     </modules>
 
     <properties>
