@@ -1,0 +1,47 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: subscription-service
+  config:
+    import: "optional:configserver:http://localhost:8888"
+  datasource:
+    url: jdbc:postgresql://localhost:5432/db_subscription
+    username: swami
+    password: swami
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  kafka:
+    bootstrap-servers: localhost:9092
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+swamisuite:
+  jwt:
+    jwks-client:
+      url: http://localhost:8081/.well-known/jwks.json
+      refresh-interval-seconds: 600
+  services:
+    catalog-service-url: http://localhost:8083
+    tenant-service-url: http://localhost:8082
+    internal-token: dev-internal-token-change-me
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus

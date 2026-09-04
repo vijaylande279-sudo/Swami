@@ -5,9 +5,11 @@
         <div class="flex items-center gap-6">
           <span class="font-semibold tracking-wide">Swami Suite</span>
           <nav class="flex gap-4 text-sm text-platform-200">
-            <a routerLink="/" class="hover:text-white">Dashboard</a>
-            <a *appHasPermission="'tenant:employee:read'" routerLink="/employees" class="hover:text-white">Employees</a>
-            <a *appHasPermission="'tenant:role:read'" routerLink="/roles" class="hover:text-white">Roles</a>
+            <a routerLink="/console" class="hover:text-white">Dashboard</a>
+            <a routerLink="/" class="hover:text-white">Catalog</a>
+            <a *appHasPermission="'tenant:employee:read'" routerLink="/console/employees" class="hover:text-white">Employees</a>
+            <a *appHasPermission="'tenant:role:read'" routerLink="/console/roles" class="hover:text-white">Roles</a>
+            <a *appHasPermission="'platform:billing:purchase'" routerLink="/console/billing" class="hover:text-white">Billing</a>
           </nav>
         </div>
         <div class="flex items-center gap-4 text-sm">

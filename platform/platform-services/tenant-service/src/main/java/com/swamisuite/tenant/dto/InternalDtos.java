@@ -15,6 +15,9 @@ public final class InternalDtos {
     public record TenantSummary(UUID id, String name, String slug, String status) {
     }
 
+    public record UpdateTenantStatusRequest(@NotBlank String status) {
+    }
+
     public record CreateUserRequest(
             UUID tenantId,
             @NotBlank @Email String email,

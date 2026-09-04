@@ -29,9 +29,16 @@ public class JwtAuthenticationGatewayFilter implements GlobalFilter, Ordered {
     private static final Set<String> PUBLIC_PATHS = Set.of(
             "/auth/register", "/auth/login", "/auth/login/mfa", "/auth/refresh",
             "/auth/password/forgot", "/auth/password/reset",
-            "/.well-known/jwks.json"
+            "/.well-known/jwks.json",
+            // Publicly reachable - Razorpay calls this from the internet. Security
+            // is the HMAC signature check inside payment-service, not a bearer token.
+            "/payments/webhook"
     );
-    private static final List<String> IDENTITY_HEADERS = List.of("X-User-Id", "X-Tenant-Id", "X-Roles", "X-Permissions");
+    // catalog-service has no protected endpoints at all in Phase 2 (no admin write
+    // UI yet - see catalog-service's own SecurityConfig) - the whole prefix is what
+    // the public landing page reads, unauthenticated.
+    private static final String PUBLIC_PREFIX = "/catalog/";
+    private static final List<String> IDENTITY_HEADERS = List.of("X-User-Id", "X-Tenant-Id", "X-Roles", "X-Permissions", "X-Entitlements");
 
     private final JwtVerifier jwtVerifier;
 
@@ -69,7 +76,7 @@ public class JwtAuthenticationGatewayFilter implements GlobalFilter, Ordered {
     }
 
     private boolean isPublic(String path) {
-        return PUBLIC_PATHS.contains(path);
+        return PUBLIC_PATHS.contains(path) || path.startsWith(PUBLIC_PREFIX);
     }
 
     private String extractBearerToken(ServerWebExchange exchange) {
@@ -90,6 +97,9 @@ public class JwtAuthenticationGatewayFilter implements GlobalFilter, Ordered {
         }
         if (claims.permissions() != null) {
             builder.header("X-Permissions", String.join(",", claims.permissions()));
+        }
+        if (claims.entitlements() != null) {
+            builder.header("X-Entitlements", String.join(",", claims.entitlements()));
         }
         return builder;
     }

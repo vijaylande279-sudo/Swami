@@ -36,7 +36,7 @@ export class MfaChallengeComponent {
       next: () => {
         this.auth.fetchMe().subscribe(() => {
           this.tenantContext.loadCurrentTenant().subscribe();
-          this.router.navigate(['/']);
+          this.router.navigate(['/console']);
         });
       },
       error: (err: unknown) => {

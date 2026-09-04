@@ -1,9 +1,11 @@
 package com.swamisuite.identity.security;
 
 import com.swamisuite.common.security.JwtProperties;
+import com.swamisuite.identity.domain.EntitlementGrant;
 import com.swamisuite.identity.domain.Permission;
 import com.swamisuite.identity.domain.Role;
 import com.swamisuite.identity.domain.User;
+import com.swamisuite.identity.repository.EntitlementGrantRepository;
 import io.jsonwebtoken.Jwts;
 import java.security.KeyPair;
 import java.time.Instant;
@@ -20,10 +22,12 @@ public class JwtIssuer {
 
     private final KeyPair keyPair;
     private final JwtProperties properties;
+    private final EntitlementGrantRepository entitlementGrantRepository;
 
-    public JwtIssuer(KeyPair keyPair, JwtProperties properties) {
+    public JwtIssuer(KeyPair keyPair, JwtProperties properties, EntitlementGrantRepository entitlementGrantRepository) {
         this.keyPair = keyPair;
         this.properties = properties;
+        this.entitlementGrantRepository = entitlementGrantRepository;
     }
 
     public String issueAccessToken(User user) {
@@ -36,6 +40,11 @@ public class JwtIssuer {
         Instant now = Instant.now();
         Instant expiry = now.plusSeconds(properties.accessTokenTtlSeconds() > 0 ? properties.accessTokenTtlSeconds() : 900);
 
+        List<String> entitlements = user.getTenantId() == null
+                ? List.of()
+                : entitlementGrantRepository.findByTenantId(user.getTenantId()).stream()
+                        .map(EntitlementGrant::getAppKey).sorted().toList();
+
         var builder = Jwts.builder()
                 .subject(user.getId().toString())
                 .issuer(properties.issuer() != null ? properties.issuer() : "swami-suite-identity")
@@ -43,8 +52,9 @@ public class JwtIssuer {
                 .expiration(Date.from(expiry))
                 .claim("roles", roleNames)
                 .claim("perms", permCodes)
-                // Entitlements come from subscription-service (Phase 2); always empty for now.
-                .claim("entitlements", List.of());
+                // Local read-model populated by consuming subscription-service's
+                // entitlement.changed Kafka events - see EntitlementGrantConsumer.
+                .claim("entitlements", entitlements);
 
         if (user.getTenantId() != null) {
             builder.claim("tenant_id", user.getTenantId().toString());

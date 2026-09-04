@@ -1,0 +1,12 @@
+<div class="max-w-sm mx-auto mt-20 bg-white rounded-lg shadow p-8 text-center">
+  <h1 class="text-xl font-semibold text-platform-900 mb-4">Subscribing to {{ appKey }}</h1>
+
+  @if (isStarting()) {
+    <p class="text-sm text-platform-500">Opening secure payment window…</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="text-sm text-red-600 mb-4">{{ errorMessage() }}</p>
+    <button (click)="startCheckout()" class="bg-platform-800 text-white rounded px-3 py-2">Try again</button>
+  }
+</div>

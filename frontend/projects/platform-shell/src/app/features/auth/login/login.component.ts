@@ -51,7 +51,7 @@ export class LoginComponent {
   private afterLogin(): void {
     this.auth.fetchMe().subscribe(() => {
       this.tenantContext.loadCurrentTenant().subscribe();
-      this.router.navigate(['/']);
+      this.router.navigate(['/console']);
     });
   }
 
