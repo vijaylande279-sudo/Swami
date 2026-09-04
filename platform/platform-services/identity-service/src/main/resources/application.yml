@@ -1,0 +1,43 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: identity-service
+  config:
+    import: "optional:configserver:http://localhost:8888"
+  datasource:
+    url: jdbc:postgresql://localhost:5432/db_identity
+    username: swami
+    password: swami
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+swamisuite:
+  jwt:
+    issuer: swami-suite-identity
+    access-token-ttl-seconds: 900
+    refresh-token-ttl-seconds: 2592000
+    # keys.private-key-path / public-key-path deliberately unset by default - leave
+    # unset for an ephemeral in-memory key pair (fine for tests / a single local run),
+    # set via env vars in docker-compose so keys persist across container restarts.
+  services:
+    tenant-service-url: http://localhost:8082
+    internal-token: dev-internal-token-change-me
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus

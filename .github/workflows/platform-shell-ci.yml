@@ -1,0 +1,44 @@
+name: platform-shell-ci
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/projects/platform-shell/**"
+      - "frontend/angular.json"
+      - "frontend/tailwind.config.js"
+      - "frontend/package.json"
+      - ".github/workflows/platform-shell-ci.yml"
+  pull_request:
+    paths:
+      - "frontend/projects/platform-shell/**"
+      - "frontend/angular.json"
+      - "frontend/tailwind.config.js"
+      - "frontend/package.json"
+      - ".github/workflows/platform-shell-ci.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        # npm install, not ci: package-lock.json is out of sync with package.json,
+        # pre-existing on main and unrelated to this workflow (frontend/Dockerfile
+        # made the same call previously: "Use npm install instead of npm ci").
+        run: npm install
+
+      - name: Build platform-shell
+        run: npx ng build platform-shell --configuration development
+
+      - name: Test platform-shell
+        run: npx ng test platform-shell --watch=false

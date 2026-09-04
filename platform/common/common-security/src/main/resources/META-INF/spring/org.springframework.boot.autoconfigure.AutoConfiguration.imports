@@ -1,0 +1,2 @@
+com.swamisuite.common.security.JwtVerificationAutoConfiguration
+com.swamisuite.common.security.PasswordEncoderConfig

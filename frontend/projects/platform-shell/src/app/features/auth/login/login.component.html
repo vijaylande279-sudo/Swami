@@ -1,0 +1,32 @@
+<div class="max-w-sm mx-auto mt-20 bg-white rounded-lg shadow p-8">
+  <h1 class="text-xl font-semibold text-platform-900 mb-6">Sign in</h1>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-4">
+    <label class="flex flex-col gap-1 text-sm text-platform-700">
+      Email
+      <input formControlName="email" type="email" class="border border-platform-300 rounded px-3 py-2" />
+    </label>
+
+    <label class="flex flex-col gap-1 text-sm text-platform-700">
+      Password
+      <input formControlName="password" type="password" class="border border-platform-300 rounded px-3 py-2" />
+    </label>
+
+    @if (errorMessage()) {
+      <p class="text-sm text-red-600">{{ errorMessage() }}</p>
+    }
+
+    <button
+      type="submit"
+      [disabled]="form.invalid || isSubmitting()"
+      class="bg-platform-800 text-white rounded px-3 py-2 disabled:opacity-50"
+    >
+      {{ isSubmitting() ? 'Signing in…' : 'Sign in' }}
+    </button>
+
+    <div class="flex justify-between text-sm text-platform-600">
+      <a routerLink="/register">Create a tenant account</a>
+      <a routerLink="/password-reset">Forgot password?</a>
+    </div>
+  </form>
+</div>

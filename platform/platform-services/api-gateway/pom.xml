@@ -18,6 +18,31 @@
     <description>Spring Cloud Gateway edge service for swami-suite (PLATFORM_BUILD_INSTRUCTIONS.md §3.1) - routing and service discovery only in Phase 0; authN/entitlement filtering lands in Phase 1/2</description>
 
     <dependencies>
+        <!-- Spring Cloud Gateway requires a pure WebFlux stack - exclude the servlet-based
+             web/security starters that common-security otherwise pulls in for its filters,
+             which every other (servlet-based) service happily uses as-is. Only the
+             framework-agnostic pieces (JwtVerifier, PublicKeySource, JwtClaims) are used
+             here, via a reactive filter, not common-security's servlet OncePerRequestFilter. -->
+        <dependency>
+            <groupId>com.swamisuite</groupId>
+            <artifactId>common-security</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-security</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- NOT common-web: its GlobalExceptionHandler/CorrelationIdFilter beans are
+             auto-registered eagerly (see CommonWebAutoConfiguration) and
+             CorrelationIdFilter extends the servlet-only GenericFilterBean, which would
+             fail to classload with no servlet API on this WebFlux-only classpath. The
+             gateway writes its own minimal error body instead - see
+             JwtAuthenticationGatewayFilter. -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>

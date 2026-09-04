@@ -1,0 +1,40 @@
+<div class="max-w-sm mx-auto mt-12 bg-white rounded-lg shadow p-8">
+  <h1 class="text-xl font-semibold text-platform-900 mb-1">Create your tenant</h1>
+  <p class="text-sm text-platform-500 mb-6">Starts a 14-day trial — no card required.</p>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-4">
+    <label class="flex flex-col gap-1 text-sm text-platform-700">
+      Business name
+      <input formControlName="tenantName" class="border border-platform-300 rounded px-3 py-2" />
+    </label>
+
+    <label class="flex flex-col gap-1 text-sm text-platform-700">
+      Your full name
+      <input formControlName="fullName" class="border border-platform-300 rounded px-3 py-2" />
+    </label>
+
+    <label class="flex flex-col gap-1 text-sm text-platform-700">
+      Email
+      <input formControlName="email" type="email" class="border border-platform-300 rounded px-3 py-2" />
+    </label>
+
+    <label class="flex flex-col gap-1 text-sm text-platform-700">
+      Password
+      <input formControlName="password" type="password" class="border border-platform-300 rounded px-3 py-2" />
+    </label>
+
+    @if (errorMessage()) {
+      <p class="text-sm text-red-600">{{ errorMessage() }}</p>
+    }
+
+    <button
+      type="submit"
+      [disabled]="form.invalid || isSubmitting()"
+      class="bg-platform-800 text-white rounded px-3 py-2 disabled:opacity-50"
+    >
+      {{ isSubmitting() ? 'Creating…' : 'Create account' }}
+    </button>
+
+    <a routerLink="/login" class="text-sm text-platform-600 text-center">Already have an account? Sign in</a>
+  </form>
+</div>

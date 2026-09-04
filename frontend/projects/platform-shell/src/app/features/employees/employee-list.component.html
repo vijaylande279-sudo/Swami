@@ -1,0 +1,62 @@
+<div class="flex flex-col gap-8">
+  <h1 class="text-xl font-semibold text-platform-900">Employees</h1>
+
+  <section *appHasPermission="'tenant:employee:invite'" class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-sm font-medium text-platform-700 mb-4">Invite an employee</h2>
+    <app-invite-employee [tenantId]="tenantId" [roles]="roles()" (invited)="reload()" />
+  </section>
+
+  <section class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-sm font-medium text-platform-700 mb-4">Active employees</h2>
+    @if (employees().length === 0) {
+      <p class="text-sm text-platform-500">No employees yet.</p>
+    } @else {
+      <table class="w-full text-sm">
+        <thead class="text-left text-platform-500">
+          <tr><th class="pb-2">Name</th><th class="pb-2">Email</th></tr>
+        </thead>
+        <tbody>
+          @for (employee of employees(); track employee.userId) {
+            <tr class="border-t border-platform-100">
+              <td class="py-2">{{ employee.fullName || '—' }}</td>
+              <td class="py-2">{{ employee.email }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </section>
+
+  <section class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-sm font-medium text-platform-700 mb-4">Pending invites</h2>
+    @if (invites().length === 0) {
+      <p class="text-sm text-platform-500">No pending invites.</p>
+    } @else {
+      <table class="w-full text-sm">
+        <thead class="text-left text-platform-500">
+          <tr><th class="pb-2">Email</th><th class="pb-2">Role</th><th class="pb-2">Status</th><th></th></tr>
+        </thead>
+        <tbody>
+          @for (invite of invites(); track invite.id) {
+            <tr class="border-t border-platform-100">
+              <td class="py-2">{{ invite.email }}</td>
+              <td class="py-2">{{ invite.roleName }}</td>
+              <td class="py-2">{{ invite.status }}</td>
+              <td class="py-2 text-right">
+                @if (invite.status === 'PENDING') {
+                  <button
+                    *appHasPermission="'tenant:employee:revoke'"
+                    (click)="revoke(invite.id)"
+                    class="text-red-600 text-sm"
+                  >
+                    Revoke
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </section>
+</div>

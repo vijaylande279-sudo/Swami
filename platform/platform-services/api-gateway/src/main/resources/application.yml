@@ -11,11 +11,43 @@ spring:
       discovery:
         locator:
           enabled: false
+      globalcors:
+        cors-configurations:
+          "[/**]":
+            # Dev-only: any localhost port, so platform-shell (or Hotel-Order-Management)
+            # can be served from whichever port is free. Tighten this to real frontend
+            # origins before anything resembling production.
+            allowedOriginPatterns:
+              - "http://localhost:*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
       routes:
         - id: hello-service
           uri: lb://HELLO-SERVICE
           predicates:
             - Path=/hello/**
+        - id: identity-service
+          uri: lb://IDENTITY-SERVICE
+          predicates:
+            - Path=/auth/**,/mfa/**,/roles/**,/permissions/**,/.well-known/jwks.json
+        - id: tenant-service
+          uri: lb://TENANT-SERVICE
+          predicates:
+            - Path=/tenants/**,/invites/**
+
+swamisuite:
+  jwt:
+    jwks-client:
+      url: http://localhost:8081/.well-known/jwks.json
+      refresh-interval-seconds: 600
 
 eureka:
   client:

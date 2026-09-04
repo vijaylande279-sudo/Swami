@@ -1,9 +1,24 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./src/**/*.{html,ts}'],
+  content: ['./src/**/*.{html,ts}', './projects/platform-shell/src/**/*.{html,ts}'],
   theme: {
     extend: {
       colors: {
+        // Neutral, dense identity for platform-shell (login, tenant context, role
+        // builder) - deliberately not the restaurant app's warm/dark "brand" palette
+        // below, per §8.2's "deliberately neutral" direction for shared platform chrome.
+        platform: {
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+        },
         brand: {
           50: '#fff7ed',
           100: '#ffedd5',
