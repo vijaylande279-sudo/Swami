@@ -11,6 +11,24 @@ spring:
       discovery:
         locator:
           enabled: false
+      globalcors:
+        cors-configurations:
+          "[/**]":
+            # Dev-only: any localhost port, so platform-shell (or Hotel-Order-Management)
+            # can be served from whichever port is free. Tighten this to real frontend
+            # origins before anything resembling production.
+            allowedOriginPatterns:
+              - "http://localhost:*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
       routes:
         - id: hello-service
           uri: lb://HELLO-SERVICE
