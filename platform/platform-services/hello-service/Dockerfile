@@ -1,8 +1,6 @@
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /workspace
-COPY platform/pom.xml platform/pom.xml
-COPY platform/common platform/common
-COPY platform/platform-services/hello-service platform/platform-services/hello-service
+COPY platform platform
 RUN mvn -f platform/pom.xml -pl platform-services/hello-service -am -DskipTests package
 
 FROM eclipse-temurin:21-jre
