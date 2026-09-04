@@ -30,6 +30,7 @@
         <module>platform-services/hello-service</module>
         <module>platform-services/identity-service</module>
         <module>platform-services/tenant-service</module>
+        <module>platform-services/catalog-service</module>
     </modules>
 
     <properties>
