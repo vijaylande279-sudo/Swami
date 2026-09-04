@@ -16,6 +16,20 @@ spring:
           uri: lb://HELLO-SERVICE
           predicates:
             - Path=/hello/**
+        - id: identity-service
+          uri: lb://IDENTITY-SERVICE
+          predicates:
+            - Path=/auth/**,/mfa/**,/roles/**,/permissions/**,/.well-known/jwks.json
+        - id: tenant-service
+          uri: lb://TENANT-SERVICE
+          predicates:
+            - Path=/tenants/**,/invites/**
+
+swamisuite:
+  jwt:
+    jwks-client:
+      url: http://localhost:8081/.well-known/jwks.json
+      refresh-interval-seconds: 600
 
 eureka:
   client:
