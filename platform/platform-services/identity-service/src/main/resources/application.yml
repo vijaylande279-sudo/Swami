@@ -16,6 +16,10 @@ spring:
     open-in-view: false
   flyway:
     enabled: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: identity-service
 
 eureka:
   client:

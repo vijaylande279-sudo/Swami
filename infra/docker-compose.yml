@@ -122,6 +122,7 @@ services:
       SWAMISUITE_JWT_KEYS_PUBLICKEYPATH: /keys/public.pem
       SWAMISUITE_SERVICES_TENANTSERVICEURL: http://tenant-service:8082
       SWAMISUITE_SERVICES_INTERNALTOKEN: dev-internal-token-change-me
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     volumes:
       - identity-keys:/keys
     depends_on:
