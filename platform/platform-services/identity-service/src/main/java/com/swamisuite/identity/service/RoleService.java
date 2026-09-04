@@ -45,8 +45,10 @@ public class RoleService {
         return toResponse(roleRepository.save(role));
     }
 
+    /** Only permissions a Tenant Admin may actually assign - never platform:* (cross-tenant, PLATFORM_SUPER_ADMIN/PLATFORM_SUPPORT only). */
     public List<PermissionResponse> listPermissions() {
         return permissionRepository.findAll().stream()
+                .filter(p -> isTenantAssignable(p.getCode()))
                 .map(p -> new PermissionResponse(p.getCode(), p.getDescription()))
                 .toList();
     }
@@ -61,9 +63,19 @@ public class RoleService {
         return role;
     }
 
+    /**
+     * Server-side enforcement (not just hiding platform:* from the UI list): a
+     * Tenant Admin must never be able to grant a platform-scoped permission to a
+     * custom role, even by crafting the request directly.
+     */
     private Set<Permission> resolvePermissions(List<String> codes) {
         if (codes == null) {
             return new HashSet<>();
+        }
+        for (String code : codes) {
+            if (!isTenantAssignable(code)) {
+                throw new AuthService.AuthException("Permission not assignable to a tenant role: " + code);
+            }
         }
         Set<Permission> resolved = new HashSet<>();
         for (Permission permission : permissionRepository.findAll()) {
@@ -72,6 +84,10 @@ public class RoleService {
             }
         }
         return resolved;
+    }
+
+    private boolean isTenantAssignable(String permissionCode) {
+        return !permissionCode.startsWith("platform:");
     }
 
     private RoleResponse toResponse(Role role) {
