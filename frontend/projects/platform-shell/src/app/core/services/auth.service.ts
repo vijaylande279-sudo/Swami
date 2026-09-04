@@ -19,7 +19,10 @@ export class AuthService {
   private claims = signal<JwtClaims | null>(null);
   private me = signal<MeResponse | null>(null);
 
-  readonly isLoggedIn = computed(() => !!this.accessToken);
+  // Derived from claims (a real signal), not accessToken (a plain field) — a
+  // computed() only tracks other signals it reads, so basing this on the plain
+  // field would evaluate once (false, before any login) and then never update.
+  readonly isLoggedIn = computed(() => !!this.claims());
   readonly currentUser = this.me.asReadonly();
   readonly tenantId = computed(() => this.claims()?.tenant_id ?? null);
   readonly permissions = computed(() => this.claims()?.perms ?? []);
