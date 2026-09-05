@@ -24,6 +24,7 @@
         <module>common/common-events</module>
         <module>common/common-web</module>
         <module>common/common-tenancy</module>
+        <module>common/common-audit</module>
         <module>platform-services/discovery-server</module>
         <module>platform-services/config-server</module>
         <module>platform-services/api-gateway</module>
@@ -33,6 +34,7 @@
         <module>platform-services/catalog-service</module>
         <module>platform-services/subscription-service</module>
         <module>platform-services/payment-service</module>
+        <module>platform-services/audit-service</module>
     </modules>
 
     <properties>
